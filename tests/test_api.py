@@ -1,5 +1,7 @@
 from unittest.mock import MagicMock, patch
 
+import pytest
+
 from music_describer import analyze, describe
 
 
@@ -35,6 +37,32 @@ def test_describe_returns_analysis_and_description(tmp_wav_file):
     assert "description" in result
     assert result["description"] == "A melodic track in A major."
     assert "rhythm" in result["analysis"]
+
+
+def test_analyze_with_subset(tmp_wav_file):
+    result = analyze(tmp_wav_file, analyzers=["rhythm", "harmony"])
+    assert set(result.keys()) == {"rhythm", "harmony"}
+
+
+def test_analyze_subset_preserves_order(tmp_wav_file):
+    result = analyze(tmp_wav_file, analyzers=["energy", "rhythm"])
+    assert list(result.keys()) == ["energy", "rhythm"]
+
+
+def test_analyze_unknown_analyzer_raises(tmp_wav_file):
+    with pytest.raises(ValueError, match="Unknown analyzer"):
+        analyze(tmp_wav_file, analyzers=["bogus"])
+
+
+def test_describe_with_subset(tmp_wav_file):
+    mock_provider = MagicMock()
+    mock_provider.generate.return_value = "A track."
+
+    with patch("music_describer.get_provider", return_value=mock_provider):
+        with patch("music_describer.load_config", return_value={"llm": {}}):
+            result = describe(tmp_wav_file, analyzers=["rhythm"])
+
+    assert set(result["analysis"].keys()) == {"rhythm"}
 
 
 def test_describe_calls_llm_with_analysis(tmp_wav_file):

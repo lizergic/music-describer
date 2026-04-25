@@ -43,6 +43,17 @@ def test_cli_prose_mode(tmp_wav_file, capsys):
     assert "A beautiful melody in D minor." in captured.out
 
 
+def test_cli_analyzers_subset(tmp_wav_file, capsys):
+    with patch(
+        "sys.argv",
+        ["music-describer", tmp_wav_file, "--analysis-only", "--analyzers", "rhythm,harmony"],
+    ):
+        main()
+    captured = capsys.readouterr()
+    result = json.loads(captured.out)
+    assert set(result.keys()) == {"rhythm", "harmony"}
+
+
 def test_cli_output_to_file(tmp_wav_file, tmp_path):
     output_file = str(tmp_path / "result.txt")
 
