@@ -25,6 +25,9 @@ Ollama requires no extra Python packages -- just a running [Ollama](https://olla
 ### CLI
 
 ```bash
+# Show all available flags
+music-describer --help
+
 # Structured analysis only (no LLM needed)
 music-describer song.mp3 --analysis-only
 
@@ -35,9 +38,35 @@ music-describer song.mp3
 # Full JSON output (analysis + description)
 music-describer song.mp3 --json
 
-# Save to file
+# Save analysis to a file
 music-describer song.mp3 --analysis-only -o analysis.json
+
+# Save full JSON (analysis + prose) to a file
+music-describer song.mp3 --json -o song.json
+
+# Run only a subset of analyzers (comma-separated)
+music-describer song.mp3 --analysis-only --analyzers rhythm,harmony
+
+# Use a specific config file (overrides ./config.yaml and ~/.music-describer/config.yaml)
+music-describer song.mp3 --config ./my-config.yaml
+
+# OpenAI provider
+export OPENAI_API_KEY="your-key"
+music-describer song.mp3 --config ./openai.yaml
+
+# Local Ollama (no API key needed; requires a running Ollama server)
+music-describer song.mp3 --config ./ollama.yaml
+
+# Pipe JSON output through jq for ad-hoc inspection
+music-describer song.mp3 --analysis-only | jq '.rhythm.tempo'
+
+# Batch a directory of files (bash)
+for f in tracks/*.mp3; do
+  music-describer "$f" --analysis-only -o "analysis/$(basename "$f" .mp3).json"
+done
 ```
+
+> By default all five analyzers run. Pass `--analyzers` (CLI) or `analyzers=[...]` (Python API) to run a subset. Valid names: `rhythm`, `harmony`, `timbre`, `structure`, `energy`.
 
 ### Python API
 
@@ -56,6 +85,10 @@ print(result["description"])
 # "A warm, mid-tempo track in A major with a driving rhythmic feel..."
 print(result["analysis"]["timbre"]["tonal_quality"])
 # "neutral"
+
+# Run only a subset of analyzers
+result = analyze("song.mp3", analyzers=["rhythm", "harmony"])
+result = describe("song.mp3", analyzers=["rhythm", "harmony", "energy"])
 ```
 
 ## Analyzers

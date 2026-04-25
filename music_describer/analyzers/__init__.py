@@ -4,10 +4,12 @@ from .rhythm import RhythmAnalyzer
 from .structure import StructureAnalyzer
 from .timbre import TimbreAnalyzer
 
-ALL_ANALYZERS = [
-    RhythmAnalyzer,
-    HarmonyAnalyzer,
-    TimbreAnalyzer,
-    StructureAnalyzer,
-    EnergyAnalyzer,
-]
+ANALYZERS = {
+    "rhythm": RhythmAnalyzer,
+    "harmony": HarmonyAnalyzer,
+    "timbre": TimbreAnalyzer,
+    "structure": StructureAnalyzer,
+    "energy": EnergyAnalyzer,
+}
+
+ALL_ANALYZERS = list(ANALYZERS.values())
