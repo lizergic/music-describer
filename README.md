@@ -4,6 +4,9 @@ Analyze audio files and generate natural-language descriptions of musical style 
 
 Extracts structured features (rhythm, harmony, timbre, structure, energy) via [librosa](https://librosa.org/), then optionally synthesizes them into musician-level prose using an LLM.
 
+**Approximate API cost per description (Anthropic): USD $0.010**
+_Prompt can be modified to limit characters and save more tokens._
+
 ## Installation
 
 ```bash
