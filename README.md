@@ -6,7 +6,7 @@ Extracts structured features (rhythm, harmony, timbre, structure, energy) via [l
 
 **Approximate API cost per description (Anthropic): USD $0.010**
 
-_Prompt can be modified to limit characters and save more tokens._
+_Prompt can be modified for efficiency._
 
 ## Installation
 
