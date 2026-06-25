@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#08060e" />
+  <title>music-describer — lizergic</title>
+  <link rel="stylesheet" href="/src/style.css" />
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="wordmark" aria-label="lizergic music-describer">
+        <a class="lz" href="https://lizergic.dev" rel="noopener">lizergic</a><span class="sep">/</span><span class="id">music-describer</span>
+      </div>
+      <div class="head-right">
+        <a class="repo-btn" href="https://github.com/lizergic/music-describer" target="_blank" rel="noopener noreferrer" aria-label="GitHub repository, opens in a new tab">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+          <span class="repo-stars" id="repoStars">★ —</span>
+        </a>
+        <p class="tagline">
+          musician-grade descriptions from a <b>track</b>. analyzed <b>in your browser</b> ·
+          your key never leaves the page.
+        </p>
+      </div>
+    </header>
+
+    <!-- ============ control console ============ -->
+    <section class="console" aria-label="settings">
+      <div class="console-head"><span class="dot"></span><h2>console</h2></div>
+      <div class="fields">
+        <div class="field f-key">
+          <label for="key">api key <span class="req">*</span></label>
+          <input id="key" class="control" type="password" autocomplete="off" spellcheck="false"
+            placeholder="your provider key — held in this tab only" />
+        </div>
+        <div class="field f-provider">
+          <label for="provider">provider</label>
+          <select id="provider" class="control">
+            <option value="claude">Claude</option>
+            <option value="openai">OpenAI</option>
+          </select>
+        </div>
+        <div class="field f-model">
+          <label for="model">model</label>
+          <input id="model" class="control" type="text" spellcheck="false" autocomplete="off" />
+        </div>
+      </div>
+      <div id="errslot" class="errslot" data-state="ok" role="status" aria-live="polite">
+        <span class="ico"></span><span id="errtext">ready — add your key and a track</span>
+      </div>
+    </section>
+
+    <!-- ============ actions ============ -->
+    <div class="actions">
+      <button id="describe" class="btn btn-primary" type="button" disabled>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3v4M3 5h4M6 17v4M4 19h4"/><path d="M13 4l2.5 6.5L22 13l-6.5 2.5L13 22l-2.5-6.5L4 13l6.5-2.5z"/></svg>
+        describe
+      </button>
+      <span class="spacer"></span>
+      <span class="seedtag" id="enginetag">engine <b>—</b></span>
+    </div>
+
+    <!-- ============ stage: track + description ============ -->
+    <section class="stage">
+      <!-- source -->
+      <div class="shot">
+        <div class="shot-head">
+          <span class="lbl">source</span>
+          <span class="status" id="shotstatus"><span class="led"></span><span class="txt">no track</span></span>
+        </div>
+        <label class="drop" id="drop" for="file">
+          <input id="file" type="file" accept="audio/*,.mp3,.wav,.flac,.ogg,.m4a,.aac" hidden />
+          <span class="drop-hint" id="drophint">drop a track<br><span class="sub">mp3 · wav · flac · ogg — or click · stays on your device</span></span>
+        </label>
+        <audio id="preview" controls hidden></audio>
+        <div class="readout" id="readout" hidden></div>
+      </div>
+
+      <!-- description -->
+      <div class="promptcard">
+        <div class="cardhead">
+          <h2>description</h2>
+          <div class="pc-tools">
+            <span class="status" id="pstatus"><span class="led"></span><span class="txt">idle</span></span>
+            <button id="promptcopy" class="copybtn" type="button" disabled>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>
+              <span class="lbl">copy</span>
+            </button>
+          </div>
+        </div>
+        <div class="blocks" id="blocks">
+          <div class="empty" id="promptempty">no description yet. drop a track, then hit <b>describe</b>.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ analysis ============ -->
+    <section class="analysis" aria-label="structured analysis">
+      <div class="an-head">
+        <h2>analysis <span class="sub">/ on-device audio readout</span></h2>
+        <button id="analysiscopy" class="copybtn" type="button" disabled>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>
+          <span class="lbl">copy json</span>
+        </button>
+      </div>
+      <pre id="analysis" class="an-body">—</pre>
+    </section>
+
+    <footer>
+      <span>music-describer · analyzed in-browser · keys never leave the page</span>
+      <span>kbd: <kbd>d</kbd> describe · <kbd>c</kbd> copy</span>
+    </footer>
+  </div>
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
