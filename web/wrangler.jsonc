@@ -1,0 +1,11 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "music-describer",
+  "compatibility_date": "2026-06-24",
+  // Static-assets-only deploy: no Worker script (no "main"), just serve dist/.
+  // _headers (CSP) in dist/ is honored by Workers assets.
+  "assets": {
+    "directory": "./dist",
+    "not_found_handling": "single-page-application"
+  }
+}
